@@ -9,11 +9,10 @@ define('dir.helper', function (require, exports, module) {
 });
 
 define('app.directives', function (require, exports, module, undefined) {
-	'use strict';
 	var ctrlsConfig = {},
+		availableDirsCnstrs = {},
 		DIR_ATTR = 'dir',
 		$doc = require('$doc'),
-		dataCtrlSel = '[data-' + DIR_ATTR + ']',
 		CONFIG_TPL = 'config-tpl',
 		DIR_ATTR_INITED = DIR_ATTR + '-inited',
 		inited = false,
@@ -88,6 +87,7 @@ define('app.directives', function (require, exports, module, undefined) {
 		$child.each(function () {
 			if ($(this).data(DIR_ATTR)) {
 				cel = {
+					'dirName' : $(this).data(DIR_ATTR),
 					'dir' : $(this),
 					'childs' : [],
 					'parent' : currEl,
@@ -101,13 +101,14 @@ define('app.directives', function (require, exports, module, undefined) {
 		});
 	}
 
-	function attachEl(el) {
+	function attachEl(el, callback) {
 		if (!inited) {
 			initDirective(directivesTree);
 		}
 		var $el = $(el),
 			$tmpEl = $el,
-			newDir = {'dir' : undefined, 'childs' : [], 'parent' : undefined};
+			newDir = {'dir' : undefined, 'childs' : [], 'parent' : undefined},
+			requireDirs = [];
 
 
 		while (!isInitedDirectiveEl($tmpEl) && $tmpEl.length) {
@@ -124,22 +125,39 @@ define('app.directives', function (require, exports, module, undefined) {
 		}
 
 		buildTree($tmpEl, newDir);
-		initDirective(newDir);
-		// initDir
-		loopOverChildDirs(newDir, function (d) {
-			if (d && d.dirInstance && !d.inited) {
-				callDir(d, 'initDir');
-				d.initedDir = true;
-			}
-		}, 1e9);
-		// events
-		loopOverChildDirs(newDir, function (d) {
-			if (d && d.dirInstance && !d.initedEvents){
-				callDir(d, 'events');
-				d.initedEvents = true;
-			}
-		}, 1e9);
 
+		// detect requiredDirs
+		loopOverChildDirs(newDir, function (d) {
+			if (!availableDirsCnstrs[d.dirName]) {
+				requireDirs.push(d.dirName);
+			}
+		}, 1e9);
+		require(requireDirs, function () {
+			var args = arguments;
+			$.each(requireDirs, function(index) {
+				availableDirsCnstrs[requireDirs[index]] = args[index];
+			});
+
+			initDirective(newDir);
+			// initDir
+			loopOverChildDirs(newDir, function (d) {
+				if (d && d.dirInstance && !d.initedDir) {
+					callDir(d, 'initDir');
+					d.initedDir = true;
+				}
+			}, 1e9);
+			// events
+			loopOverChildDirs(newDir, function (d) {
+				if (d && d.dirInstance && !d.initedEvents){
+					callDir(d, 'events');
+					d.initedEvents = true;
+				}
+			}, 1e9);
+
+			if (callback) {
+				callback();
+			}
+		});
 	}
 
 	function detachEl(el) {
@@ -152,8 +170,6 @@ define('app.directives', function (require, exports, module, undefined) {
 		callChilds($tmpEl, 'destroy', undefined, 1e9);
 	}
 
-
-
 	function initDirective(dir) {
 		if (dir && dir.dir && !dir.dirInstance && !isInitedDirectiveEl(dir.dir)) {
 			var $this = dir.dir,
@@ -163,7 +179,7 @@ define('app.directives', function (require, exports, module, undefined) {
 				Dir;
 
 			dirData.dir = dirData.dir || 'base.dir';
-			Dir = require(dirData.dir);
+			Dir = availableDirsCnstrs[dirData.dir];
 			if (Dir) {
 				if ($.isFunction(Dir)) {
 					if (dirData[CONFIG_TPL]) {
@@ -312,16 +328,19 @@ define('base.dir', function (require, exports, module) {
 				self.$el.on(event, classes, self[fnName].bind(self));
 			}
 		},
+		trigger : function () {
+			gevent.trigger.apply(gevent, arguments);
+		},
 		ong : function (event, classes, fnName) {
 			var self = this;
 
 			if (!fnName) {
-				gevent.on(event, function (doc, event) {
-					self[classes].call(self, event);
+				gevent.on(event, function (doc, event, data) {
+					self[classes].call(self, event, data);
 				});
 			} else {
-				gevent.on(event, classes, function (doc, event) {
-					self[fnName].call(self, event);
+				gevent.on(event, classes, function (doc, event, data) {
+					self[fnName].call(self, event, data);
 				});
 			}
 		},
@@ -344,7 +363,7 @@ define('base.dir', function (require, exports, module) {
 	});
 });
 
-define('input', function (require, exports, module) {
+define('generic.input', function (require, exports, module) {
 	var defaultDir = require('base.dir'),
 		durtyClass = 'durty',
 		validClass = 'valid';
@@ -407,8 +426,8 @@ define('input', function (require, exports, module) {
 	});
 });
 
-if (window.requirejs) {
-	require(['dirs'], function (dirs) {
+if (window && window.requirejs) {
+	requirejs(['dirs'], function (dirs) {
 		// init
 	});
 }
