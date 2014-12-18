@@ -1,0 +1,17 @@
+{
+  "name": "SDirective",
+  "version": "0.0.1",
+  "homepage": "https://github.com/SqrTT/SDirective",
+  "authors": [
+    "SqrTT <tolik@sqrtt.pro>"
+  ],
+  "main": "sdirective.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
