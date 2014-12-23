@@ -5,6 +5,10 @@
   "authors": [
     "SqrTT <tolik@sqrtt.pro>"
   ],
+  "dependencies": {
+    "jquery" : "lastest",
+    "smodular" : "SqrTT/SModular#master"
+    },
   "main": "sdirective.js",
   "license": "MIT",
   "ignore": [

@@ -25,8 +25,8 @@ define('app.directives', function (require, exports, module, undefined) {
 		log = require('console'),
 		document = require('document');
 
-
 	log.info('Init directives controller');
+
 
 	function callDir(dir, fnName, data) {
 		if (dir && dir.dirInstance && $.isFunction(dir.dirInstance[fnName])) {
