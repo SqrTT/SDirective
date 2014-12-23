@@ -6,7 +6,7 @@
     "SqrTT <tolik@sqrtt.pro>"
   ],
   "dependencies": {
-    "jquery" : "lastest",
+    "jquery" : "*",
     "smodular" : "SqrTT/SModular#master"
     },
   "main": "sdirective.js",
