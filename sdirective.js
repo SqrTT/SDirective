@@ -1,4 +1,46 @@
 /* global define */
+/// define some basic modules
+define('window', function (require, exports, module) {
+	module.exports = window;
+});
+define('document', function (require, exports, module) {
+	module.exports = require('window').document;
+});
+define('$', function (require, exports, module) {
+	module.exports = require('jQuery');
+});
+define('$doc', function (require, exports, module) {
+	module.exports = require('$')(require('document'));
+});
+define('$win', function (require, exports, module) {
+	module.exports = require('$')(require('window'));
+});
+define('$body', function (require, exports, module) {
+	module.exports = require('$')('body');
+});
+define('console', function (require, exports, module) {
+	module.exports = require('window').console;
+});
+define('gevent', function (require, exports, module) {
+	module.exports = require('$doc');
+});
+// jQuery don't support AMD
+define('jquery', function (require, exports, module) {
+	var window = require('window');
+	if (window.jQuery) {
+		module.exports = window.jQuery;
+	} else {
+		throw "jQuery is undefined!";
+	}
+});
+define('lodash', function (require, exports, module) {
+	var window = require('window');
+	if (window._) {
+		module.exports = window._;
+	} else {
+		throw "jQuery is undefined!";
+	}
+});
 
 define('dirs', function (require, exports, module) {
 	module.exports = require('app.directives');
