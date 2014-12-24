@@ -7,7 +7,7 @@ define('document', function (require, exports, module) {
 	module.exports = require('window').document;
 });
 define('$', function (require, exports, module) {
-	module.exports = require('jQuery');
+	module.exports = require('jquery');
 });
 define('$doc', function (require, exports, module) {
 	module.exports = require('$')(require('document'));
@@ -29,14 +29,6 @@ define('jquery', function (require, exports, module) {
 	var window = require('window');
 	if (window.jQuery) {
 		module.exports = window.jQuery;
-	} else {
-		throw "jQuery is undefined!";
-	}
-});
-define('lodash', function (require, exports, module) {
-	var window = require('window');
-	if (window._) {
-		module.exports = window._;
 	} else {
 		throw "jQuery is undefined!";
 	}
