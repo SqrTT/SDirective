@@ -24,16 +24,6 @@ define('console', function (require, exports, module) {
 define('gevent', function (require, exports, module) {
 	module.exports = require('$doc');
 });
-// jQuery don't support AMD
-define('jquery', function (require, exports, module) {
-	var window = require('window');
-	if (window.jQuery) {
-		module.exports = window.jQuery;
-	} else {
-		throw "jQuery is undefined!";
-	}
-});
-
 define('dirs', function (require, exports, module) {
 	module.exports = require('app.directives');
 });
