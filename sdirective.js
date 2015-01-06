@@ -21,6 +21,9 @@ define('$body', function (require, exports, module) {
 define('console', function (require, exports, module) {
 	module.exports = require('window').console;
 });
+define('log', function (require, exports, module) {
+	module.exports = require('console');
+});
 define('gevent', function (require, exports, module) {
 	module.exports = require('$doc');
 });
@@ -128,6 +131,7 @@ define('app.directives', function (require, exports, module, undefined) {
 	function attachEl(el, callback) {
 		if (!inited) {
 			initDirective(directivesTree);
+			inited = true;
 		}
 		var $el = $(el),
 			$tmpEl = $el,
@@ -345,27 +349,29 @@ define('base.dir', function (require, exports, module) {
 
 	module.exports = require('Class').extend({
 		on : function (event, classes, fnName) {
-			var self = this;
-			if (!fnName) {
-				self.$el.on(event, self[classes].bind(self));
+			var self = this,
+				callback = function (event, data) {
+					self[fnName || classes].call(self, event, data);
+				};
+			if (fnName) {
+				self.$el.on(event, classes, callback);
 			} else {
-				self.$el.on(event, classes, self[fnName].bind(self));
+				self.$el.on(event, callback);
 			}
 		},
 		trigger : function () {
 			gevent.trigger.apply(gevent, arguments);
 		},
 		ong : function (event, classes, fnName) {
-			var self = this;
+			var self = this,
+				callback = function (doc, event, data) {
+					self[fnName || classes].call(self, event, data);
+				};
 
-			if (!fnName) {
-				gevent.on(event, function (doc, event, data) {
-					self[classes].call(self, event, data);
-				});
+			if (fnName) {
+				gevent.on(event, classes, callback);
 			} else {
-				gevent.on(event, classes, function (doc, event, data) {
-					self[fnName].call(self, event, data);
-				});
+				gevent.on(event, callback);
 			}
 		},
 		callParents : function (fnName, data, deep) {
@@ -378,10 +384,12 @@ define('base.dir', function (require, exports, module) {
 			this.$el.off();
 		},
 		init : function ($el, options) {
-			this.$el = $el;
-			this.type = options.dir;
-			this.options = options;
-			this._id = uniqueID++;
+			var self = this;
+			uniqueID += 1;
+			self.$el = $el;
+			self.type = options.dir;
+			self.options = options;
+			self._id = uniqueID;
 			$el.addClass('d-' + options.dir);
 		}
 	});
