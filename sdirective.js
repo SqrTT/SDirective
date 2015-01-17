@@ -97,8 +97,9 @@ define('app.directives', function (require, exports, module, undefined) {
 		}
 	}
 
-	function isElInDOM($el) {
-		return $el && $el[0] && $.contains(document.documentElement, $el[0]);
+	function isContain($container, $contain) {
+		return $contain && $contain[0] && $container && $container[0] && $.contains(
+			$container[0], $contain[0]);
 	}
 
 	function isInitedDirectiveEl($el) {
@@ -128,7 +129,8 @@ define('app.directives', function (require, exports, module, undefined) {
 		});
 	}
 
-	function attachEl(el, callback) {
+	function attachTree(el, callback) {
+		log.debug('Attach tree', el);
 		if (!inited) {
 			initDirective(directivesTree);
 			inited = true;
@@ -188,14 +190,38 @@ define('app.directives', function (require, exports, module, undefined) {
 		});
 	}
 
-	function detachEl(el) {
-		var $el = $(el),
-			$tmpEl = $el;
+	function findDeepChildsDirs(node) {
+		var dirs = [];
 
-		while (!isInitedDirectiveEl($tmpEl) && $tmpEl.length) {
-			$tmpEl = $tmpEl.parent();
+		function deep(index, node) {
+			var $node = $(node);
+			if ( isInitedDirectiveEl($node) ) {
+				dirs.push($node.data(DIR_ATTR_INITED));
+			} else {
+				$node.children().each(deep);
+			}
 		}
-		callChilds($tmpEl, 'destroy', undefined, 1e9);
+		deep(undefined, node);
+		return dirs;
+	}
+
+	function detachDir(dir) {
+		callChilds(dir, 'destroy', undefined, 1e9);
+		$.each(dir.parent.childs, function (index, value) {
+			if (dir === value) {
+				dir.parent.childs.splice(index, 1);
+			}
+		});
+		callDir(dir, 'destroy');
+		dir.dir.data(DIR_ATTR_INITED, undefined);
+	}
+
+	function detachTree(el) {
+		log.debug('Detach tree', el);
+
+		$.each(findDeepChildsDirs(el), function (index, dir) {
+			detachDir(dir);
+		});		
 	}
 
 	function initDirective(dir) {
@@ -242,13 +268,13 @@ define('app.directives', function (require, exports, module, undefined) {
 	}
 
 	$doc.ready(function () {
-			attachEl($doc);
+			attachTree($doc);
 			log.info('Directives controller has been started');
 		}
 	);
 
-	exports.attachEl = attachEl;
-	exports.detachEl = detachEl;
+	exports.attachTree = attachTree;
+	exports.detachTree = detachTree;
 	exports.helpers = {
 			'callChilds' : callChilds,
 			'callParents' : callParents
