@@ -1,32 +1,5 @@
 /* global define */
-/// define some basic modules
-define('window', function (require, exports, module) {
-	module.exports = window;
-});
-define('document', function (require, exports, module) {
-	module.exports = require('window').document;
-});
-define('$', function (require, exports, module) {
-	module.exports = require('jquery');
-});
-define('$doc', function (require, exports, module) {
-	module.exports = require('$')(require('document'));
-});
-define('$win', function (require, exports, module) {
-	module.exports = require('$')(require('window'));
-});
-define('$body', function (require, exports, module) {
-	module.exports = require('$')('body');
-});
-define('console', function (require, exports, module) {
-	module.exports = require('window').console;
-});
-define('log', function (require, exports, module) {
-	module.exports = require('console');
-});
-define('gevent', function (require, exports, module) {
-	module.exports = require('$doc');
-});
+
 define('dirs', function (require, exports, module) {
 	module.exports = require('app.directives');
 });
