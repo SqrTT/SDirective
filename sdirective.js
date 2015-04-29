@@ -12,7 +12,9 @@ define('app.directives', function (require, exports, module, undefined) {
 	var ctrlsConfig = {},
 		availableDirsCnstrs = {},
 		DIR_ATTR = 'dir',
-		$doc = require('$doc'),
+		$ = require('$'),
+		document = require('document'),
+		$doc = $(document),
 		CONFIG_TPL = 'config-tpl',
 		DIR_ATTR_INITED = DIR_ATTR + '-inited',
 		inited = false,
@@ -21,9 +23,7 @@ define('app.directives', function (require, exports, module, undefined) {
 			'childs' : [],
 			'parent' : undefined
 		},
-		$ = require('$'),
-		log = require('console'),
-		document = require('document');
+		log = require('console');
 
 	log.info('Init directives controller');
 
