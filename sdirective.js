@@ -1,4 +1,5 @@
 /* global define */
+/// define some basic modules
 define('window', function (require, exports, module) {
 	module.exports = window;
 });
@@ -26,7 +27,6 @@ define('log', function (require, exports, module) {
 define('gevent', function (require, exports, module) {
 	module.exports = require('$doc');
 });
-
 define('dirs', function (require, exports, module) {
 	module.exports = require('app.directives');
 });
@@ -35,13 +35,12 @@ define('dir.helper', function (require, exports, module) {
 	module.exports = require('dirs').helpers;
 });
 
-define('app.directives', function (require, exports, module, undefined) {
+define('app.directives', function (require, exports) {
 	var ctrlsConfig = {},
+		undefined,
 		availableDirsCnstrs = {},
 		DIR_ATTR = 'dir',
-		$ = require('$'),
-		document = require('document'),
-		$doc = $(document),
+		$doc = require('$doc'),
 		CONFIG_TPL = 'config-tpl',
 		DIR_ATTR_INITED = DIR_ATTR + '-inited',
 		inited = false,
@@ -50,6 +49,7 @@ define('app.directives', function (require, exports, module, undefined) {
 			'childs' : [],
 			'parent' : undefined
 		},
+		$ = require('$'),
 		log = require('console');
 
 	log.info('Init directives controller');
@@ -164,7 +164,7 @@ define('app.directives', function (require, exports, module, undefined) {
 		}, 1e9);
 		require(requireDirs, function () {
 			var args = arguments;
-			$.each(requireDirs, function(index) {
+			$.each(requireDirs, function (index) {
 				availableDirsCnstrs[requireDirs[index]] = args[index];
 			});
 
@@ -178,7 +178,7 @@ define('app.directives', function (require, exports, module, undefined) {
 			}, 1e9);
 			// events
 			loopOverChildDirs(newDir, function (d) {
-				if (d && d.dirInstance && !d.initedEvents){
+				if (d && d.dirInstance && !d.initedEvents) {
 					callDir(d, 'events');
 					d.initedEvents = true;
 				}
@@ -195,7 +195,7 @@ define('app.directives', function (require, exports, module, undefined) {
 
 		function deep(index, node) {
 			var $node = $(node);
-			if ( isInitedDirectiveEl($node) ) {
+			if (isInitedDirectiveEl($node)) {
 				dirs.push($node.data(DIR_ATTR_INITED));
 			} else {
 				$node.children().each(deep);
@@ -221,7 +221,7 @@ define('app.directives', function (require, exports, module, undefined) {
 
 		$.each(findDeepChildsDirs(el), function (index, dir) {
 			detachDir(dir);
-		});		
+		});
 	}
 
 	function initDirective(dir) {
@@ -485,7 +485,7 @@ define('generic.input', function (require, exports, module) {
 });
 
 if (window && window.requirejs) {
-	requirejs(['dirs'], function (dirs) {
+	window.requirejs(['dirs'], function (dirs) {
 		// init
 	});
 }
