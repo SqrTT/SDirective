@@ -1,7 +1,7 @@
 SDirective
 ==========
 
-Directives is class binded to DOM node. On page loads directives manager search for all directives on the page and build tree form that directives. After tree is ready in each directive instance methods initDir and events will be called. Also there is possible to load only required scripts for page dynamicly using RequireJS. Each instance will have propertys with name $el and options. $el is element where directive is found (wrapped in jQuery object) and options is object with propertys, useful for configuration of directive. Property options is filfiled by directive manager form defferent places (ex. data attributes, JSON in data attribute, JSON in node, object in global name space).
+Directive is class binded to DOM node. When page is loading directives, manager searching for all directives on the page and build tree form. After tree is ready, instance methods *initDir* and *events* will be called in each directive. Also there is possibility to load only required scripts for page dynamicly using RequireJS. Each instance will have propertys with name **$el** and **options**. **$el** is element where directive is found (wrapped in jQuery object), and **options** is object with propertys, useful for configuration of directive. Property options is fulfiled by directive manager from different places (ex. data attributes, JSON in data attribute, JSON in node, object in global namespace).
 
 Example of directve:
 ```javascript
@@ -50,11 +50,11 @@ Definition of directive in template:
 ...
 </div>
 ```
-**data-dir** attribute shows what directive should be inited for this template. All data attributes will be pushed to options in directive.
+**data-dir** attribute shows what directive should be initialized for this template. All data attributes will be pushed to options in directive.
 
 Each directive will be loaded by require method so some AMD library should be used. Directive name is AMD module name.
 
-Directives class is builded with inheritance support same as used in Service Framework and Integration Framework. This will inprove edications of developers.
+Directives class is build with inheritance support the same as used in Service Framework and Integration Framework. This will improve education of developers.
 
  
 Examples of directive which show element (element selector is specified in options) on click.
@@ -79,7 +79,7 @@ Template is next:
 <span data-dir="show" data-show=".js-dialog" >Open!</span>
 ```
 
-Cases when some new DOM node (with child branches) was added happends. New node can contain directives and they will not be inited (as result will not work as expected). To solve this case there is attachTree method. Method attachTree should be used after node is added in DOM. It will initialize all directives insade and attach it to the parent tree.
+Cases when some new DOM node (with child branches) was added happens. New node can contain directives and they will not be initialized (as result will not work as expected). To solve this case there is **attachTree** method. Method attachTree should be used after node is added in DOM. It will initialize all directives insade and attach it to the parent tree.
 
 Example:
 ```javascript
